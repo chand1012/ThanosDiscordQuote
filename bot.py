@@ -1,6 +1,6 @@
 import discord
-import requests
 import json
+from random import randint
 
 def get_keys(filename="keys.json"):
     parsed = None
@@ -10,9 +10,12 @@ def get_keys(filename="keys.json"):
     return parsed
 
 def get_quote():
-    data = requests.get("https://thanosapi.herokuapp.com/random/")
-    parsed_data = json.loads(data.text)
-    return parsed_data['quote']
+    data = None
+    with open('quotes.json') as f:
+        data = f.read()
+    parsed_data = json.loads(data)
+    index = randint(0,25)
+    return parsed_data[index]['quote']
 
 keys = get_keys()
 token = keys['discord_token']
@@ -25,7 +28,7 @@ async def on_message(message):
         pass
     if recv.startswith('!thanos'):
         msg = get_quote()
-        state = recv[8:] is ''
+        state = not (recv[8:] is '')
         await client.send_message(channel, content=msg, tts=state)
 
 @client.event
